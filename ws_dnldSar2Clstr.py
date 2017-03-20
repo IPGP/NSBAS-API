@@ -140,7 +140,7 @@ def execute():
 
     if request.values['mode'] == "async" :
 
-	ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
+	##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
 	
 	global p
 	
@@ -159,7 +159,7 @@ def execute():
 
 	command2 = "echo $$ ; for i in " + " " + idlist + " ; do python /home/adminsrv/WS_Download_JSON/downloadUneImage5.py $i" + " " + workingDir + " ; done "
 	
-	stdin, stdout, stderr = ssh.exec_command(command2, get_pty=True)
+	##stdin, stdout, stderr = ssh.exec_command(command2, get_pty=True)
 	
 	#return command2
 	#for i in range(len(data)):
@@ -180,7 +180,7 @@ def execute():
         return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<uuid:process_token>/outputs', methods = ['GET'])
-#@auth.login_required
+@auth.login_required
 def get_result(job_id,process_token):
     # Lorsqu'il est interrogé uniquement à fin de suivi, 
     # le webservice a besoin du job Id et, par sécurité, 

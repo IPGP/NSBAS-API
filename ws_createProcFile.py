@@ -132,7 +132,7 @@ def execute():
     # Creons le jeton du processus (a finaliser)
     processToken = "d9dc5248-e741-4ef0-a54fee1a0"
 
-    ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
+    ##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
 	
     # Donner des valeurs aux repertoires utilisés par les commandes
     workingDir="/home/adminsrv/xxxxxxxx"
@@ -152,7 +152,7 @@ def execute():
     #return stdout.read() + stdout1.read()
 	
     #return stdout.read() + job_id
-    ssh.close()
+    ##ssh.close()
 	
     #return command2
     # Pour avoir une idée de la structure des données reçues

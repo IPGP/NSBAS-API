@@ -134,7 +134,7 @@ def execute():
     # Creons le jeton du processus (a finaliser)
     processToken = "d9dc5248-e741-4ef0-a54fee1a0"
 
-    ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
+    ##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
 	
     global pid
     global stderr
@@ -146,17 +146,17 @@ def execute():
     # Selon ATO, /home/ROIPAC_NSBAS/WorkingDir/OrbitNumber
     sourceDir="/home/adminsrv/yyyyyyyy"
 
-    command1 = "mkdir " + os.path.join(workingDir,"DEM")
-    command2 = "cd " + os.path.join(workingDir,"DEM")
-    command3 = "echo $$ ;  python" +" " + "nsb_getDemFile.py " + " " + sourceDir + " " + "."
+    ##command1 = "mkdir " + os.path.join(workingDir,"DEM")
+    ##command2 = "cd " + os.path.join(workingDir,"DEM")
+    ##command3 = "echo $$ ;  python" +" " + "nsb_getDemFile.py " + " " + sourceDir + " " + "."
 
-    stdin, stdout, stderr = ssh.exec_command(command1 + "\n" + command2 + "\n" + command3 , get_pty=True)
-    stdin.channel.shutdown_write()
+    ##stdin, stdout, stderr = ssh.exec_command(command1 + "\n" + command2 + "\n" + command3 , get_pty=True)
+    ##stdin.channel.shutdown_write()
 	
-    job_id = stdout.readline()[:-2]
-	
+    ##job_id = stdout.readline()[:-2]
+    job_id = 123654
     #return stdout.read() + job_id
-    ssh.close()
+    ##ssh.close()
 	
     #return command2
     # Pour avoir une idée de la structure des données reçues

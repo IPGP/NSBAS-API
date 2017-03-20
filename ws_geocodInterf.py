@@ -136,7 +136,7 @@ def execute():
     # Lisons le jeton du processus (a finaliser)
     processToken = "d9dc5248-e741-4ef0-a54fee1a0"
 
-    ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
+    ##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
 	
     # Donner des valeurs aux repertoires utilisés par les commandes
     workingDir="/home/adminsrv/xxxxxxxx"
@@ -147,7 +147,7 @@ def execute():
     ##stdin.channel.shutdown_write()
     ##return stdout.read() 
 
-    ssh.close()
+    ##ssh.close()
 
     #print repr(request.json)
     #print request.json['subSwath']

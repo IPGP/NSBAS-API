@@ -137,7 +137,7 @@ def execute():
 
     global pid
 
-    ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
+    ##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
 	
     # Donner des valeurs aux repertoires utilisés par les commandes
     workingDir="/home/adminsrv/xxxxxxxx"
@@ -149,7 +149,7 @@ def execute():
     ##stdin.channel.shutdown_write()
     ##return stdout.read() 
 
-    ssh.close()
+    ##ssh.close()
     ##return pid
     #print repr(request.json)
     #print request.json['subSwath']
