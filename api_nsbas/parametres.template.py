@@ -1,10 +1,42 @@
-#!flask/bin/python
-# Fichier de parametres confidentiels
-httpUserName = 'Nom d utilisateur de l identification http'
-httpPassWord = 'Mot de passe de l identification http'
-wsHostName = 'Nom ou adresse IP du serveur hebergeant l API'
-clstrHostName = 'Nom ou adresse IP du cluster qui effectue les calculs'
-clstrSshKey = 'Cle ssh du cluster qui effectue les calculs'
-clstrUserName = 'Nom utilisateur du compte de calcul sur le cluster'
-clstrPassWord = 'Mot de passe du compte de calcul sur le cluster'
-debugMode = 'true ou false, selon'
+#!/usr/bin/python
+
+"""
+file containing different config dictionnaries (describing hostname, usernames, pwd)
+to be used on the API/webservices platform side.
+Switch from one to another by commenting/uncommenting definitions
+"""
+# IPGP
+configdic = {'httpUserName' : 'http authentication user name',\
+ 'httpPassWord' : 'http authentication password',\
+ 'wsHostName' : 'Web services platform host name',\
+ 'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
+ 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
+ 'clstrUserName' : 'User name to be used on the cluster',\
+ 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
+ 'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
+ 'debugMode' : 'true or false, depending'}
+
+#uga_franck
+"""
+configdic = {'httpUserName' : 'http authentication user name',\
+ 'httpPassWord' : 'http authentication password',\
+ 'wsHostName' : 'Web services platform host name',\
+ 'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
+ 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
+ 'clstrUserName' : 'User name to be used on the cluster',\
+ 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
+ 'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
+ 'debugMode' : 'true or false, depending'}
+"""
+#uga_vm
+"""
+configdic = {'httpUserName' : 'http authentication user name',\
+ 'httpPassWord' : 'http authentication password',\
+ 'wsHostName' : 'Web services platform host name',\
+ 'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
+ 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
+ 'clstrUserName' : 'User name to be used on the cluster',\
+ 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
+ 'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
+ 'debugMode' : 'true or false, depending'}
+"""

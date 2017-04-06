@@ -2,24 +2,32 @@
 
 import json
 import time
-import os,sys
+import os
+import sys
 #from datetime import date
 import argparse
 import subprocess
+import shlex
 import logging
+import pdb
 
+# Parameters on the cluster scripts side
+import wsc_parametres
 
-################### Logging  ############################
+def get_file_type(filename):
+    """ check the file type of the file
 
-logger = logging.getLogger()
-ch = logging.StreamHandler()
-logger.setLevel(logging.DEBUG)
-ch.setLevel(logging.DEBUG)
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(ch)
+    :param filename: the input filename to check
+    :type filename: str
+    :return: the type of the filename
+    :rtype: str
+    """
+    with os.popen("/usr/bin/file -bi " + filename) as f:
+        ret = f.read()
+        f.close()
+    return  ret
 
-############### Unzip 
+############### Unzip
 
 def unzip_files(directory):
         """
@@ -27,7 +35,7 @@ def unzip_files(directory):
         :param directory: the directory containing the zip files
         :type directory: str
         """
-        
+
         files = ["{}/{}".format(directory, f) for f in os.listdir(directory)
                       if f.endswith(".zip")]
         FNULL = open(os.devnull, 'w')
@@ -43,8 +51,8 @@ def unzip_files(directory):
                 raise RuntimeError("zip command failed for file {}.\nExit code={}\nstdout={}\nstderr={}"
                                    .format(zfile, exitcode, out, err))
         FNULL.close()
-        logger.info("Data unzipped")
-        
+        logging.info("Data unzipped")
+
 ################# Delete zip data
 
 def delete_zip_files(directory):
@@ -53,29 +61,20 @@ def delete_zip_files(directory):
 	:param directory: the directory containing zip files
 	:type directory: str
 	"""
-	
+
 	files = ["{}/{}".format(directory, f) for f in os.listdir(directory)
                       if f.endswith(".zip")]
         for zfile in files:
-	      os.remove(zfile)
-	      #try:
-		  #proc = subprocess.Popen([os.remove(zfile), directory],
-					  #stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		  #out, err = proc.communicate()
-		  #exitcode = proc.returncode
-	      #except OSError:
-		  #raise OSError("command not found")
-	      #if exitcode is not 0:
-		  #raise RuntimeError("zip command failed for file {}.\nExit code={}\nstdout={}\nstderr={}"
-                                   #.format(zfile, exitcode, out, err))
-        logger.info("zip files deleted")
-        
+            os.remove(zfile)
+        logging.info("zip files deleted")
+
 ############# Download
 
 def download_data (directory, id_data, email, passwd):
-	"""
+    """
 	Download data from PEPS in the defined directory.
-	:param directory: the directory containing the zip files
+
+    :param directory: the directory containing the zip files
 	:param email: email adress to connect to PEPS
 	:param passwd: password to connect to PEPS
 	:param id_data: the identity of the data to be downloaded in directory
@@ -83,64 +82,90 @@ def download_data (directory, id_data, email, passwd):
 	:type email: str
 	:type passwd: str
 	:type id_data: str
-  
 	"""
-	
-	# Filter catalog result
+    #import pdb
+    #pdb.set_trace()
+    tmpfile="%s/tmp.tmp"%directory
+    get_product='curl -s -S -o %s -k -u %s:%s https://peps.cnes.fr/resto/collections/%s/%s/download/?issuerId=peps'%(tmpfile,email,passwd,collection,id_data)
+    logging.debug(get_product)
+    ret = subprocess.check_call(shlex.split(get_product))
+    logging.info("product saved")
+    file_format = get_file_type(tmpfile)
+    if "zip" not in file_format.lower():
+        logging.error("error while fetching file %s", tmpfile)
+        raise RuntimeError("error while fetching file {}/{}".format(directory, id_data))
+    logging.info("file type ok (zip), continuating")
+    logging.info("moving  from {} to {}".format(tmpfile, "%s/%s.zip"%(directory,id_data)))
+    target_name = "{}/{}.zip".format(directory, id_data)
+    os.rename(tmpfile,target_name)
+    logging.info("product saved as: %s: %d", target_name, os.path.getsize(target_name))
+    try:
+        unzip_files (directory)
+    except RuntimeError as excpt:
+        logging.error("cannot unzip file: %s", str(excpt))
+        raise RuntimeError("cannot unzip file: {}".format(excpt))
+    try:
+        delete_zip_files(directory)
+    except Exception as excpt:
+        raise RuntimeError("unable to unzip file")
 
-	tmpfile="%s/tmp.tmp"%directory
-	get_product='curl -o %s -k -u %s:%s https://peps.cnes.fr/resto/collections/%s/%s/download/?issuerId=peps'%(tmpfile,email,passwd,collection,id_data)
-	print get_product
-	os.system(get_product)
-
-	with open(tmpfile) as f_tmp:
-                   try:
-                       tmp_data=json.load(f_tmp)
-                       print "Result is a text file"
-                       print tmp_data
-                       sys.exit(-1)
-                   except ValueError:
-                       pass
-	os.rename("%s"%tmpfile,"%s/%s.zip"%(directory,id_data))
-	print "product saved as : %s/%s.zip"%(directory,id_data)
-		
-	unzip_files (directory)
-	delete_zip_files(directory)
-		
-	logger.info("Data downloaded")
+	logging.info("Data downloaded")
 
 
 ################# Main function
 
 if __name__ == "__main__":
-	
-   
+
+
     #=====================
     # Parse arguments
     #=====================
-    
+
     parser = argparse.ArgumentParser(description="Download data from PEPS ")
-    parser.add_argument("Id_data",type=str,  help="Id of the selected data to be downloaded")
-    parser.add_argument("workingDir",type=str,  help="the workingDir where to download data")
+    parser.add_argument("-l", type=str, default=None, help="log file. stdout if not set")
+    parser.add_argument("-v", type=int, default=3, help="set logging level: 0 critical, 1 error, 2 warning, 3 info, 4 debug, default=info")
+    parser.add_argument("-wd",type=str,  help="the workingDir where to download data")
+    parser.add_argument("-token",type=str, default = "notoken", help="a kind of id provided when called")
+    parser.add_argument("Id_data",type=str, metavar='images ids', nargs='+',
+                        help="Id of the selected data to be downloaded")
     args = parser.parse_args()
-    
+
+    logging_translate = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
     #=====================
     # Define parameters
     #=====================
-  
-    collection="S1"
-    email="ccccc@jjj"
-    passwd="xxxxx"
-    
+
+    collection=wsc_parametres.wsc_config['PepsCollection']
+    email=wsc_parametres.wsc_config['PepsEmailLogin']
+    passwd=wsc_parametres.wsc_config['PepsPassWord']
+    log_level = logging_translate[args.v]
+
+    if args.l is not None:
+        logging.basicConfig(filename=args.l, level=log_level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    else:
+        logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=log_level)
+    logging.info("id={} token={}".format(os.getpid(), args.token))
     #=====================
     # Call functions
     #=====================
-    
-    download_data (args.workingDir, args.Id_data, email, passwd)
-    
-    
-    
-    
-    
-    
-    
+    # checking workdir exist
+    err = 0
+    if not os.path.exists(args.wd):
+        try:
+           os.makedirs(args.wd)
+           os.chdir(args.wd)
+        except Exception as e:
+            logging.critical("cannot create image working dir %s, ABORTING", args.wd)
+            sys.exit(1)
+    else:
+        logging.info("uploading image dir in %s", args.wd)
+    for img in args.Id_data:
+        try:
+            logging.info("processing image %s", img)
+            download_data (args.wd, img, email, passwd)
+        except Exception as excpt:
+           logging.error("failure when processing image %s, keep going", img)
+           err += 1
+    logging.info("exiting with status %d", err)
+    sys.exit(err)
+
