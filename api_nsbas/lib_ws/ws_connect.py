@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import logging
 import paramiko
 import parametres
@@ -72,7 +73,12 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
         command = oarsub_prefix + " '" + command  + "'"
         logging.critical("launching command: %s", command)
         ret_tuple = ssh_client.exec_command(command)
-        return ret_tuple[1].read()
+        ret_string = ret_tuple[1].read()
+        m = re.search("OAR_JOB_ID=(\d+)", ret_string)
+        if m:
+            return m.groups()[0]
+        else:
+            return -1
     except Exception as excpt:
         logging.critical("fail to execute command '%s':  %s'", command, excpt)
         raise ValueError("fail to execute command '%s':  %s'", command, excpt)
@@ -87,18 +93,19 @@ def run_on_frontal(ssh_client, command):
         logging.critical("fail to execute command '%s':  %s'", command, excpt)
         raise ValueError("fail to execute command '%s':  %s'", command, excpt)
 
-def get_job_status(ssh_client, token, log_dir):
+def get_job_status(ssh_client, oar_id):
     """ get the job id from the token
         the id can be either a pid or a oar id
 
-    :param token: the token that was assigned when launging the job
-    :type token: string (uuid)
-    :return: the id
-    :type: integer
+    :param oar_id: the oar id of the process 
+    :type token: string 
+    :return: the a string representing the status (and the cmd error code)
+    :type: str
     """
-    command = "ws_cluster/bin/wsc_get_status.py --logdir {} --token {}".format(log_dir, token)
-    logging.critical("asking for status: command=%s", command)
+    command = "python ws_cluster/bin/wsc_get_status.py --oarid {}".format(oar_id)
+    logging.critical("info for status: command=%s", command)
     ret = run_on_frontal(ssh_client, command)
+    logging.critical("status: %s", ret)
     return ret
 
 def test_connect_luke(cluster):

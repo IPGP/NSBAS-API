@@ -170,7 +170,6 @@ def get_status(job_id,process_token):
     :rtype: str (containing a json)
     """
     ssh_client = None
-    process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:10:00", "workdir" : config["clstrBaseDir"]}
     try:
         ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
     except Exception as excpt:
@@ -179,7 +178,8 @@ def get_status(job_id,process_token):
     if ssh_client is None:
         logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
         raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
-    status = lws_connect.get_job_status(ssh_client, process_token, remote_prefix)
+    logging.info("get_status for token %s", process_token)
+    status = lws_connect.get_job_status(ssh_client, job_id)
     ssh_client.close()
     status_json = lws_nsbas.getJobStatus(job_id, process_token, status)
     return jsonify(status_json)
@@ -209,7 +209,6 @@ def execute():
     ids = [numid['id'] for  numid in request.json['pepsDataIds']]
 
     if request.values['mode'] == "async":
-        print "trying to connect to server for request dwnlod images"
         print ids
         job_id = 0
         error = ""
@@ -225,16 +224,16 @@ def execute():
         if ssh_client is None:
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
-        logging.critical("connection OK, managing %d images", len(ids))
+        logging.info("connection OK, managing %d images", len(ids))
         command = " ".join([remote_prefix + "/bin/wsc_downloadPepsData.py", \
                             "-v", "4",\
                             "-token", str(processToken), \
                             "-wd", remote_prefix + "/" + str(processToken) + "/SLC"] + ids)
         try:
             logging.critical("launching command: %s", command)
-            ret = lws_connect.run_on_cluster_node(ssh_client, command, str(processToken),
+            job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(processToken),
                                                   process_ressources)
-            logging.info("returned from submission %s", ret)
+            logging.critical("returned from submission %s", ret)
         except Exception as excpt:
             error = error + "fail to run command on server: {}".format(excpt)
             logging.error(error)

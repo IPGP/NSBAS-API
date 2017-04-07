@@ -4,12 +4,15 @@ import json
 import time
 import os
 import sys
+import re
+
 #from datetime import date
 import argparse
 import subprocess
 import shlex
 import logging
 import pdb
+import shutil
 
 # Parameters on the cluster scripts side
 import wsc_parametres
@@ -111,6 +114,26 @@ def download_data (directory, id_data, email, passwd):
 
 	logging.info("Data downloaded")
 
+def move_safes_do_date_dir(directory):
+    """for each .SAFE in directory create a directory
+    with the correct name ie YYYMMDD and move the safe
+    to it
+
+    :param directory: the directory where .SAFE dirs are
+    :type directory: str
+    """
+    for fic in os.listdir(directory):
+        if fic.endswith(".SAFE"):
+            abs_fic = directory + '/' + fic
+            logging.info("dealing with %s", abs_fic)
+            m = re.search("_(\d{8})T\d{6}_", fic)
+            if m:
+                safe_dir = m.groups()[0]
+                new_dir =directory + '/' + safe_dir
+                os.makedirs(new_dir)
+                logging.info("renaming %s -> %s", abs_fic, new_dir)
+                shutil.move(abs_fic, new_dir)
+
 
 ################# Main function
 
@@ -139,7 +162,6 @@ if __name__ == "__main__":
     email=wsc_parametres.wsc_config['PepsEmailLogin']
     passwd=wsc_parametres.wsc_config['PepsPassWord']
     log_level = logging_translate[args.v]
-
     if args.l is not None:
         logging.basicConfig(filename=args.l, level=log_level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     else:
@@ -166,6 +188,6 @@ if __name__ == "__main__":
         except Exception as excpt:
            logging.error("failure when processing image %s, keep going", img)
            err += 1
-    logging.info("exiting with status %d", err)
+    move_safes_do_date_dir(args.wd)
     sys.exit(err)
 

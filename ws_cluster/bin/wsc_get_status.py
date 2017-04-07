@@ -52,18 +52,15 @@ if __name__ == "__main__":
                 """
 
     parser = argparse.ArgumentParser(description=main_help)
-    parser.add_argument('--retcode', action='store_true', help='prints the error code of the command instead of the oar status')
     parser.add_argument('--logdir', type=str, help='the directory that contains logs')
-    parser.add_argument('--token', type=str, help='the token')
+    parser.add_argument('--oarid', type=str, help='the token')
 
     args = parser.parse_args()
-    pid = get_oar_id(args.token, args.logdir)
+    #pid = get_oar_id(args.token, args.logdir)
+    pid = args.oarid
 
     # check if it is an oarid
-    if args.retcode:
-        print get_return_code(pid)
-    else:
-        print get_oar_status(pid)
+    print "{} ({})".format(get_oar_status(pid), get_return_code(pid)) 
     sys.exit(0)
 
 
