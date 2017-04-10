@@ -33,10 +33,10 @@ GetStatus : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-dider
 GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services
 DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services/ws_dnldSar2Clstr
 
-Execute: 
-curl -i -u miguel:python -H "Content-Type: application/json" -X POST -d '{"pepsDataIds" :[{"id":"cfafa369-e89b-53d9-94bf-d7c68496970f"} , {"id":"f9f1b727-7a14-5b7c-96b0-456d53d3c1fe"} , {"id":"0ef5e877-7596-5166-b20f-94eea05933eb"}]}' http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr?mode=async 
+Execute:
+curl -i -u miguel:python -H "Content-Type: application/json" -X POST -d '{"pepsDataIds" :[{"id":"cfafa369-e89b-53d9-94bf-d7c68496970f"} , {"id":"f9f1b727-7a14-5b7c-96b0-456d53d3c1fe"} , {"id":"0ef5e877-7596-5166-b20f-94eea05933eb"}]}' http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr?mode=async
 
-getstatus: 
+getstatus:
 curl -i -u miguel:python -X GET http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr/5698/1234567890
 
  Backlog :
@@ -205,8 +205,7 @@ def execute():
 """
     # Creons le jeton du processus dans le style "d9dc5248-e741-4ef0-a54fee1a0"
     processToken = str(uuid.uuid4())
-
-    ids = [numid['id'] for  numid in request.json['pepsDataIds']]
+    ids = [numid['ids'] for numid in request.json['pepsDataIds']]
 
     if request.values['mode'] == "async":
         print ids
