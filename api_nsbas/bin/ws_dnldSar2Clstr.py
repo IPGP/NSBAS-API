@@ -195,24 +195,24 @@ def execute():
  dans le style {"IDS":"987,654,321"}
  L'execute du webservice ws_dnldSar2Clstr doit
  - prendre en arguments, dans les data de la requete http, un json listant les ids des images Peps a telecharger,
- ex : {"pepsDataIds" :[{"id":"56987456"} ,
+ ex : [{"pepsDataIds" :[{"id":"56987456"} ,
                        {"id":"287946133"} ,
                        {"id":"4789654123"} ,
-                       {"id":"852147963"}]}
+                       {"id":"852147963"}]}]
  afin que request.json produise un tableau du style request.json['ids'][0]['id']
  - donner en sortie un ticket permettant d'interroger le getstatus pour savoir ou
    en est le telechargement. Ce ticket pourrait etre un jobid.
 """
     # Creons le jeton du processus dans le style "d9dc5248-e741-4ef0-a54fee1a0"
     processToken = str(uuid.uuid4())
-    ids = [numid['ids'] for numid in request.json['pepsDataIds']]
+    ids = [numid['id'] for numid in request.json[0]['pepsDataIds']]
 
     if request.values['mode'] == "async":
         print ids
         job_id = 0
         error = ""
         ssh_client = None
-        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:10:00", "workdir":
+        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir":
                 remote_prefix}
         ret = "Error"
         try:
@@ -232,7 +232,7 @@ def execute():
             logging.critical("launching command: %s", command)
             job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(processToken),
                                                   process_ressources)
-            logging.critical("returned from submission %s", ret)
+            logging.critical("returned from submission %s", job_id)
         except Exception as excpt:
             error = error + "fail to run command on server: {}".format(excpt)
             logging.error(error)
