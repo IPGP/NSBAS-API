@@ -74,7 +74,7 @@ wsVersion = '1.0'
 wsPortNumber = 5023
 
 # Incluons un fichier de parametres communs a tous les webservices
-execfile("parametres.py")
+#execfile("parametres.py")
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
@@ -132,12 +132,10 @@ def get_status(job_id, process_token):
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
 @auth.login_required
 def execute():
-# L'execute synchrone renvoit le resultat et la reponse http 200 : OK
-# L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201 ou celle du GetResult et la reponse http 200, selon
-#
-# L'execute du webservice ws_dnldDem2Clstr doit
-#
-#
+    """ L'execute synchrone renvoit le resultat et la reponse http 200 : OK
+     L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201 ou celle du GetResult et la reponse http 200, selon
+     L'execute du webservice ws_dnldDem2Clstr doit
+    """
     logging.critical("getting: %s", str(request.json[0]['processToken']))
     process_token = request.json[0]['processToken']
 
