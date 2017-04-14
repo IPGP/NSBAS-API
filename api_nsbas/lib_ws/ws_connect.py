@@ -68,9 +68,11 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     oarsub_prefix = "oarsub -n {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
             format(token, task_desc["nodes"], task_desc["cores"], task_desc["walltime"],
                     task_desc["workdir"])
+    oarsub_suffix = "mkdir -p {}/LOG; mv OAR*{}*stderr OAR*{}*.stdout {}/LOG/".format(token,
+            token, token, token)
     logging.info("oar prefix: %s", oarsub_prefix)
     try:
-        command = oarsub_prefix + " '" + command  + "'"
+        command = oarsub_prefix + " '" + command  + "'; " + oarsub_suffix
         logging.critical("launching command: %s", command)
         ret_tuple = ssh_client.exec_command(command)
         ret_string = ret_tuple[1].read()
@@ -97,8 +99,8 @@ def get_job_status(ssh_client, oar_id):
     """ get the job id from the token
         the id can be either a pid or a oar id
 
-    :param oar_id: the oar id of the process 
-    :type token: string 
+    :param oar_id: the oar id of the process
+    :type token: string
     :return: the a string representing the status (and the cmd error code)
     :type: str
     """
