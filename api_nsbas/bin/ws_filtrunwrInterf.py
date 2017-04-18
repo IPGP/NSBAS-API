@@ -52,6 +52,11 @@ from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_url_path = "")
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 
+# Parametres specifiques a ce webservice
+wsName = 'ws_filtrunwrInterf'
+wsVersion = '1.0'
+wsPortNumber = 5028
+
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
 
@@ -183,4 +188,5 @@ def dismiss(job_id):
     
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(debug=debugMode,host=wsHostName, port=wsPortNumber)
+    print "hostname=", config['wsHostName'], "port=", wsPortNumber
+    app.run(debug=config['debugMode'], host=config['wsHostName'], port=wsPortNumber)

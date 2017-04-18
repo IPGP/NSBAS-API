@@ -25,7 +25,6 @@
 # Note PHA 20170418 : Code dérivé du modèle synchrone ws_createProcFile en vue du codage final
 #
 
-
 import logging
 # cet import os et subproces est-il bien utile ? Ne sert-il pas qu'en local ?
 import os, subprocess
@@ -33,7 +32,6 @@ import os, subprocess
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 import paramiko
-
 
 # Le module (bibliotheque) specifique des webservices NSBAS
 # Doit etre dans le PYTHON PATH
@@ -60,9 +58,6 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 wsName = 'ws_geocodInterf'
 wsVersion = '1.0'
 wsPortNumber = 5029
-
-# Incluons un fichier de parametres communs a tous les webservices
-execfile("parametres.py")
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
@@ -193,4 +188,5 @@ def dismiss(job_id):
     
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(debug=debugMode,host=wsHostName, port=wsPortNumber)
+    print "hostname=", config['wsHostName'], "port=", wsPortNumber
+    app.run(debug=config['debugMode'], host=config['wsHostName'], port=wsPortNumber)

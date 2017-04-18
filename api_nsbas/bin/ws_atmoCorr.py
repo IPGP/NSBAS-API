@@ -187,4 +187,5 @@ def dismiss(job_id):
     
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(debug=debugMode,host=wsHostName, port=wsPortNumber)
+    print "hostname=", config['wsHostName'], "port=", wsPortNumber
+    app.run(debug=config['debugMode'], host=config['wsHostName'], port=wsPortNumber)

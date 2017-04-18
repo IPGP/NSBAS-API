@@ -20,18 +20,24 @@
 # GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5030/v1.0/services
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5030/v1.0/services/ws_dnldResult
 #
-#
+# ATTENTION : ce web-service est en voie de remplacement
 
+
+import os
+import logging
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 import paramiko
-# cet import os et subproces est-il bien utile ? Ne sert-il pas qu'en local ?
-import os, subprocess
 
 # Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
-from lib_ws_nsbas import *
+# Doit etre dans le PYTHON PATH
+import lib_ws.ws_nsbas as lws_nsbas
+import lib_ws.ws_connect as lws_connect
+
+# Incluons un fichier de parametres communs a tous les webservices
+import parametres
+config = parametres.configdic
 
 # Preparons la connexion ssh via Paramiko
 ssh = paramiko.SSHClient()
@@ -46,9 +52,6 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 wsName = 'ws_dnldResult'
 wsVersion = '1.0'
 wsPortNumber = 5030
-
-# Incluons un fichier de parametres communs a tous les webservices
-execfile("parametres.py")
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
@@ -90,7 +93,7 @@ def describe_process():
 		  )
 
 
-@app.route('/v' + wsVersion + '/services/'+wsName+'/<uuid:process_token>/outputs/<int:res_name>', methods = ['GET'])
+@app.route('/v' + wsVersion + '/services/'+wsName+'/<process_token>/outputs/<int:res_name>', methods = ['GET'])
 @auth.login_required
 def get_result(process_token,res_name):
 # Le GetResult du webservice dnldResult doit fournir le fichier demandé
@@ -107,4 +110,5 @@ def dismiss(job_id):
     
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(debug=debugMode,host=wsHostName, port=wsPortNumber)
+    print "hostname=", config['wsHostName'], "port=", wsPortNumber
+    app.run(debug=config['debugMode'], host=config['wsHostName'], port=wsPortNumber)
