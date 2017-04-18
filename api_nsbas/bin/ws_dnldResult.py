@@ -1,10 +1,10 @@
-#!flask/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Webservice ws_dnldResult, ex WS8
-# Version PHA du 8/3/2017
 #
 # Fonctions : 
 # - Fournir à l'application cliente le fichier qu'elle demande à destination de l'utilisateur.
+# ATTENTION : ce script sera probablement remplacé par un autre dispositif. Ne pas consommer de temps dessus.
 #
 # Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 # Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
@@ -21,19 +21,6 @@
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5030/v1.0/services/ws_dnldResult
 #
 #
-# Backlog :
-# 
-# Donner une valeur au repertoire workingDir utilisés par les commandes
-# Variabiliser et sortir les chemins en dur
-# Faire en sorte de fermer la connexion ssh sans tuer les process
-# Gerer le cas ou le GetResult est demande avant que le process soit termine: renvoyer le GetStatus
-# Comment faire le lien entre jeton du processus et jobId ? 
-#    - Déposer sur le cluster, a cote des fichiers telecharges, un fichier nomme comme le jobId et contenant le jeton ? 
-#    - Mettre les fichiers dans un repertoire dont le nom contienne le jobId et le jeton ?
-# Tester l'Execute face à un serveur de calcul disposant des scripts python requis pour faire ce que ce webservice lui demande
-# 
-# Dernières modifications:
-# 
 
 
 from flask import Flask, jsonify, abort, request, make_response, url_for

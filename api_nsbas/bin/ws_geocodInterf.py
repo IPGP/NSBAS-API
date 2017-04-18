@@ -1,7 +1,6 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 # Webservice ws_geocodInterf, ex WS7
-# Version PHA du 8/3/2017
 #
 # Fonctions : 
 # - Géocoder les résultats, passer de la géométrie radar à la géométrie terrain à la demande de l'utilisateur.
@@ -24,19 +23,7 @@
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5029/v1.0/services/ws_geocodInterf
 #
 #
-# Backlog :
-# 
-# Donner une valeur au repertoire workingDir utilisés par les commandes
-# Variabiliser et sortir les chemins en dur
-# Faire en sorte de fermer la connexion ssh sans tuer les process
-# Gerer le cas ou le GetResult est demande avant que le process soit termine: renvoyer le GetStatus
-# Comment faire le lien entre jeton du processus et jobId ? 
-#    - Déposer sur le cluster, a cote des fichiers telecharges, un fichier nomme comme le jobId et contenant le jeton ? 
-#    - Mettre les fichiers dans un repertoire dont le nom contienne le jobId et le jeton ?
-# Tester l'Execute face à un serveur de calcul disposant des scripts python requis pour faire ce que ce webservice lui demande
-# 
-# Dernières modifications:
-# 
+
 
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
@@ -54,6 +41,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 # Autorisons les requetes provenant de domaines distincts du domaine qui heberge le webservice
+# A restreindre dès que l'hébergement du frontal sera connu
 from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_url_path = "")
 cors = CORS(app, resources={r"*": {"origins": "*"}})

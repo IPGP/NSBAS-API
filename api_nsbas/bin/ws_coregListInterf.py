@@ -1,7 +1,6 @@
-#!flask/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Webservice ws_coregListInterf , ex WS3
-# Version PHA du 8/3/2017
 #
 # Fonction :
 # Créer une pile de SLC coregistrées et un réseau d'interférogrammes.
@@ -23,19 +22,6 @@
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5025/v1.0/services/ws_coregListInterf
 #
 #
-# Backlog :
-#
-# Donner une valeur au repertoire workingDir utilisés par les commandes
-# Variabiliser et sortir les chemins en dur
-# Faire en sorte de fermer la connexion ssh sans tuer les process
-# Gerer le cas ou le GetResult est demande avant que le process soit termine: renvoyer le GetStatus
-# Comment faire le lien entre jeton du processus et jobId ?
-#    - Déposer sur le cluster, a cote des fichiers telecharges, un fichier nomme comme le jobId et contenant le jeton ?
-#    - Mettre les fichiers dans un repertoire dont le nom contienne le jobId et le jeton ?
-# Tester l'Execute face à un serveur de calcul disposant des scripts python requis pour faire ce que ce webservice lui demande
-#
-# Dernières modifications:
-#
 
 import os
 import logging
@@ -43,7 +29,6 @@ import logging
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 import paramiko
-# cet import os et subproces est-il bien utile ? Ne sert-il pas qu'en local ?
 
 # Le module (bibliotheque) specifique des webservices NSBAS
 # Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
@@ -61,6 +46,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 # Autorisons les requetes provenant de domaines distincts du domaine qui heberge le webservice
+# A restreindre dès que l'hébergement du frontal sera connu
 from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_url_path = "")
 cors = CORS(app, resources={r"*": {"origins": "*"}})

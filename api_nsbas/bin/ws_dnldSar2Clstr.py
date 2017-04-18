@@ -10,7 +10,7 @@ Ce webservice a plusieurs fonctions :
    webservices l'instance de processus en cours.
 
 Note : GetStatus et GetResult attendent le jobId et le processToken de l'application cliente
-Il est convenu, de ne pas remettre en question les specs mais, si possible, de ne pas utiliser me jobId
+Il est convenu, de ne pas remettre en question les specs
 Ce code est inspire de
 https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
@@ -39,20 +39,7 @@ curl -i -u miguel:python -H "Content-Type: application/json" -X POST -d '{"pepsD
 getstatus:
 curl -i -u miguel:python -X GET http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr/5698/1234567890
 
- Backlog :
 
-Si le workindir n'est pas le meme pour tous les telechargements, integrer le choix du nom du
-workingdir et sa creation
-
- Gerer le cas ou le GetResult est demande avant que le process soit termine: renvoyer le GetStatus
-Comment faire le lien entre jeton du processus et jobId ?
- - Deposer sur le cluster, a cote des fichiers telecharges, un fichier nomme comme le jobId
-et contenant le jeton ?
- - Mettre les fichiers dans un repertoire dont le nom contienne le jobId et le jeton ?
-Dernieres modifications:
- - Transfert des valeurs en dur dans des fichiers de paramètres
- - Retour de la génération du jeton par uuid
- - mise à jour du #!/usr/bin/env python
 """
 
 import os
@@ -61,11 +48,10 @@ import logging
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 import paramiko, uuid
-# cet import os et subproces est-il bien utile ? Ne sert-il pas qu'en local ?
-############## os est utilisé pour récupérer le home : os.environ['HOME']
+
 
 # Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
+# Doit etre dans le PYTHON PATH
 import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
@@ -78,6 +64,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 # Autorisons les requetes provenant de domaines distincts du domaine qui heberge le webservice
+# A restreindre dès que l'hébergement du frontal sera connu
 from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_url_path = "")
 cors = CORS(app, resources={r"*": {"origins": "*"}})

@@ -1,7 +1,6 @@
-#!flask/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Webservice ws_dnldDem2Clstr , ex WS1
-# Version PHA du 8/3/2017
 #
 # Fonction :
 # Obtenir sur le cluster de calcul un modèle numérique de terrain (MNT ou DEM) à 30m qui couvre l'ensemble de l'image radar (ensemble des 3 sous-fauchées).
@@ -23,20 +22,6 @@
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services/ws_dnldDem2Clstr
 #
 #
-# Backlog :
-#
-# Comment détermine-t-on le DEM à télécharger ?
-# Donner des valeurs aux repertoires sourceDir et workingDir utilisés par les commandes
-# Si le workindir n'est pas le meme pour tous les telechargements, integrer le choix du nom du workingdir et sa creation
-# Variabiliser et sortir les chemins en dur
-# Faire en sorte de fermer la connexion ssh sans tuer les process
-# Gerer le cas ou le GetResult est demande avant que le process soit termine: renvoyer le GetStatus
-# Comment faire le lien entre jeton du processus et jobId ?
-#    - Déposer sur le cluster, a cote des fichiers telecharges, un fichier nomme comme le jobId et contenant le jeton ?
-#    - Mettre les fichiers dans un repertoire dont le nom contienne le jobId et le jeton ?
-# Tester l'Execute face à un serveur de calcul disposant des scripts python requis pour faire ce que ce webservice lui demande
-#
-# Dernières modifications:
 #
 
 import os
@@ -46,13 +31,13 @@ import paramiko
 import logging
 
 # Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
-# Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
+# Doit etre dans le PYTHON PATH
+
 import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
 # Incluons un fichier de parametres communs a tous les webservices
+
 import parametres
 config = parametres.configdic
 remote_prefix = config["clstrBaseDir"]
@@ -64,6 +49,7 @@ ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 # Autorisons les requetes provenant de domaines distincts du domaine qui heberge le webservice
+# A restreindre dès que l'hébergement du frontal sera connu
 from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_url_path = "")
 cors = CORS(app, resources={r"*": {"origins": "*"}})
