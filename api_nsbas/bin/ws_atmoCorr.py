@@ -62,8 +62,8 @@ auth = HTTPBasicAuth()
 
 @auth.get_password
 def get_password(username):
-    if username == httpUserName:
-        return httpPassWord
+    if username == config['httpUserName']:
+        return config['httpPassWord']
     return None
 
 @auth.error_handler
