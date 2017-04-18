@@ -37,15 +37,15 @@ import paramiko
 import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
-# Preparons la connexion ssh via Paramiko
-ssh = paramiko.SSHClient()
-ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
 # Incluons un fichier de parametres communs a tous les webservices
 import parametres
 config = parametres.configdic
 remote_prefix = config["clstrBaseDir"]
 ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
+
+# Preparons la connexion ssh via Paramiko
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 # Autorisons les requetes provenant de domaines distincts du domaine qui heberge le webservice
 # A restreindre dès que l'hébergement du frontal sera connu
@@ -91,7 +91,7 @@ def describe_process():
     return jsonify( {
         "id": ""+wsName+"",
         "label": "ForM@Ter/Etalab ws_createProcFile webservice",
-        "description": "Create on the cluster subwath directories and .proc parameters files",
+        "description": "Creates on the cluster subwath directories and .proc parameters files",
         "inputs":  [
               [{"processToken" : "<token>"},
                               {"subSwath" : "<subswathnb>"},
@@ -117,6 +117,7 @@ def execute():
     if request.values['mode'] == "async" :
 
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
+        # Note PHA 20170418 : job_id et processToken ne semblent pas avoir de valeur
         statusJson = getJobStatus(job_id,processToken)
         return jsonify(statusJson), 201
     else :

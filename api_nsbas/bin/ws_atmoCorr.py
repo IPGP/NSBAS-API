@@ -21,18 +21,26 @@
 # GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5027/v1.0/services
 # DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5027/v1.0/services/ws_atmoCorr
 #
+# Note PHA 20170418 : Code dérivé du modèle asynchrone ws_coregListInterf en vue du codage final
 #
 
+import os
+import logging
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
 import paramiko
-# cet import os et subproces est-il bien utile ? Ne sert-il pas qu'en local ?
-import os, subprocess
 
 # Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
-from lib_ws_nsbas import *
+# Doit etre dans le PYTHON PATH
+import lib_ws.ws_nsbas as lws_nsbas
+import lib_ws.ws_connect as lws_connect
+
+# Incluons un fichier de parametres communs a tous les webservices
+import parametres
+config = parametres.configdic
+remote_prefix = config["clstrBaseDir"]
+ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
 
 # Preparons la connexion ssh via Paramiko
 ssh = paramiko.SSHClient()
@@ -48,9 +56,6 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 wsName = 'ws_atmoCorr'
 wsVersion = '1.0'
 wsPortNumber = 5027
-
-# Incluons un fichier de parametres communs a tous les webservices
-execfile("parametres.py")
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
@@ -85,7 +90,7 @@ def describe_process():
     return jsonify( {
 		  "id": ""+wsName+"",
 		  "label": "ForM@Ter/Etalab ws_atmoCorr webservice",
-		  "description": "Applys atmospheric corrections to computed interferograms on the cluster",
+		  "description": "Applies atmospheric corrections to computed interferograms on the cluster",
 		  "inputs":  [
 		              {"processToken" : "<token>",
                                "subSwath" : "<subswathnb>"}
@@ -103,7 +108,7 @@ def describe_process():
                     }
 		  )
 
-@app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<uuid:process_token>', methods = ['GET'])
+@app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>', methods = ['GET'])
 @auth.login_required
 def get_status(job_id,process_token):
     statusJson = getJobStatus(job_id,process_token)
@@ -117,47 +122,59 @@ def execute():
 #
 # L'execute du webservice ws_atmoCorr doit 
 #
-# 
-
-    # Lisons le jeton du processus (a finaliser)
-    processToken = "d9dc5248-e741-4ef0-a54fee1a0"
-
-    global pid
-
-    ##ssh.connect(clstrHostName, username=clstrUserName, password=clstrPassWord,allow_agent=False,look_for_keys=False)
-	
-    # Donner des valeurs aux repertoires utilisés par les commandes
-    workingDir="/home/adminsrv/xxxxxxxx"
-
-    command1 = "cd "+ os.path.join(workingDir, "".join("iw"+str(request.json["subSwath"])))
-    command2 = "nsb_make_corr_atmo_erai.py -v nsbas.proc "
-    ##stdin, stdout, stderr = ssh.exec_command( command1 + "\n"+ command2, get_pty=True)
-    ##stdin.channel.shutdown_write()
-    ##return stdout.read() 
-
-    ##ssh.close()
-
-    #print repr(request.json)
-    #print request.json['subSwath']
-    job_id = 569874
     
     if request.values['mode'] == "async" :
 
+        # TODO : estimer dynamiquement walltime
+        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": remote_prefix}
+        ret = "Error"
+        error = "OK"
+        job_id = -1
+        try:
+            ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
+        except Exception as excpt:
+            logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+            raise excpt
+        if ssh_client is None:
+            logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+            raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
+        logging.info("connection OK")
+        """
+        TODO : élaborer la commande correspondant au ws_atmoCorr
+        token_dir = config['clstrBaseDir'] + '/' + process_token
+        dem_dir = token_dir + '/DEM'
+        slc_dir = token_dir + '/SLC'
+        command = " ".join(["mkdir", dem_dir + '; ',
+                            "nsb_getDemFile.py", "fromRadarImage",
+                            slc_dir, dem_dir])
+        """
+        try:
+            logging.critical("launching command: %s", command)
+            job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(process_token),
+                                                  process_ressources)
+            logging.critical("returned from submission %s", job_id)
+        except Exception as excpt:
+            error = error + "fail to run command on server: {}".format(excpt)
+            logging.error(error)
+        ssh_client.close()
+        
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
         statusJson = getJobStatus(job_id,request.json['processToken'])
         return jsonify(statusJson), 201        
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
+        # TODO : renseigner les resNames ou leur donner une valeur clairement générique
         resultJson = { "job_id" : job_id , "processToken": request.json['processToken'] , "resNames" :[{"resName" : "f5g6t9r8s1f2g3t56r4"},{"resName" : "q2q3q69sd7f4g5g4g"}] }
         return jsonify(resultJson), 200
 
-@app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<uuid:process_token>/outputs', methods = ['GET'])
+@app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required
 def get_result(job_id,process_token):
     # Lorsqu'il est interrogé uniquement à fin de suivi, 
     # le webservice a besoin du job Id et, par sécurité, 
     # du jeton de suivi du processus de calcul pour répondre
     # On les trouve dans les paramètres de l'url
+    # TODO : renseigner les resNames ou leur donner une valeur clairement générique
     resultJson = { "job_id" : job_id , "processToken": process_token , "resNames" :[{"resName" : "f5g6t9r8s1f2g3t56r4"},{"resName" : "q2q3q69sd7f4g5g4g"}] }
     return jsonify(resultJson), 200
 

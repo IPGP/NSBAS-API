@@ -31,7 +31,7 @@ from flask_httpauth import HTTPBasicAuth
 import paramiko
 
 # Le module (bibliotheque) specifique des webservices NSBAS
-# Doit etre dans le PYTHON PATH et se nommer lib_ws_nsbas.py
+# Doit etre dans le PYTHON PATH
 import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
@@ -65,7 +65,6 @@ def get_password(username):
         return config['httpPassWord']
     return None
 
-
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
@@ -90,7 +89,7 @@ def describe_process():
     return jsonify( {
       "id": ""+wsName+"",
       "label": "ForM@Ter/Etalab ws_coregListInterf webservice",
-      "description": "Create on the cluster a stack of coregistered SLC and an interferograms network",
+      "description": "Creates on the cluster a stack of coregistered SLC and an interferograms network",
       "inputs":  [
                   {"processToken" : "<token>"},
                                   {"subSwath" : "<subswathnb>"}
@@ -118,7 +117,7 @@ def execute():
      L'execute du webservice ws_coregListInterf doit
     """
     if request.values['mode'] == "async" :
-        # TODO estimer dynamiquement walltime
+        # TODO : estimer dynamiquement walltime
         process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": remote_prefix}
         ret = "Error"
         error = "OK"
@@ -147,7 +146,6 @@ def execute():
             error = error + "fail to run command on server: {}".format(excpt)
             logging.error(error)
         ssh_client.close()
-        # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
 
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
         statusJson = getJobStatus(job_id,request.json['processToken'])
