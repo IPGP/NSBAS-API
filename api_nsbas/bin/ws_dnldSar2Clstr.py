@@ -9,7 +9,7 @@ Ce webservice a plusieurs fonctions :
 - Fournir a l'application interlocutrice un jeton qui lui permette de designer aux autres
    webservices l'instance de processus en cours.
 
-Note : GetStatus et GetResult attendent le jobId et le processToken de l'application cliente
+Note : GetStatus et GetResult attendent de l'application cliente le jobId et le processToken 
 Il est convenu, de ne pas remettre en question les specs
 Ce code est inspire de
 https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
@@ -19,27 +19,6 @@ Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
  request.json est un hypercube associatif qui reprend la structure du json envoye.
  request.values est un tableau associatif qui reprend les variables transmises en
  mode key-value pair (?toto=156&mode=sync)
-
- Tests :
-Tester
-Execute avec curl -i -umiguel:python -H "Content-Type: application/json" -X POST -d '{"pepsDataIds" :[{"id":"cfafa369-e89b-53d9-94bf-d7c68496970f"} , {"id":"f9f1b727-7a14-5b7c-96b0-456d53d3c1fe"} , {"id":"0ef5e877-7596-5166-b20f-94eea05933eb"}]}' http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services/ws_dnldSar2Clstr?mode=async
- Attention : les id fournies par Peps ne fonctionnent que pendant un court laps de temps
- Des id operationnelles pour tester peuvent etre trouvees sur Peps par des requetes comme
- https://peps.cnes.fr/resto/api/collections/S1/search.json?location=amiens&_pretty=true
- Chercher FeatureCollection > features > Feature / id
-
-GetResult : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services/ws_dnldSar2Clstr/5698/456987412365/outputs
-GetStatus : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services/ws_dnldSar2Clstr/5698/456987412365
-GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services
-DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5022/v1.0/services/ws_dnldSar2Clstr
-
-Execute:
-curl -i -u miguel:python -H "Content-Type: application/json" -X POST -d '{"pepsDataIds" :[{"id":"cfafa369-e89b-53d9-94bf-d7c68496970f"} , {"id":"f9f1b727-7a14-5b7c-96b0-456d53d3c1fe"} , {"id":"0ef5e877-7596-5166-b20f-94eea05933eb"}]}' http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr?mode=async
-
-getstatus:
-curl -i -u miguel:python -X GET http://ist-159-18:5022/v1.0/services/ws_dnldSar2Clstr/5698/1234567890
-
-
 """
 
 import os

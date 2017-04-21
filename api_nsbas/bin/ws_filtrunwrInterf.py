@@ -2,27 +2,18 @@
 # -*- coding: utf-8 -*-
 # Webservice ws_filtrunwrInterf , ex WS6
 #
-# Fonction : 
-# Aplatir, filtrer et dérouler les interférogrammes calculés. 
-#
-# Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
-# Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
-#
-# Utilisation des arguments : 
-# request.json est un hypercube associatif qui reprend la structure du json envoye.
-# request.values est un tableau associatif qui reprend les variables transmises en mode key-value pair (?toto=156&mode=sync)
-#
-# Tests :
-# Tester 
-# Execute avec curl -i -umiguel:python -H "Content-Type: application/json" -X POST -d '{"processToken" : "f5e6f9g8t5232n5d5d6s56" , "subSwath" : "2"}' http://gravi155.step.univ-paris-diderot.fr:5028/v1.0/services/ws_filtrunwrInterf?mode=async
-# 
-# GetResult : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5028/v1.0/services/ws_filtrunwrInterf/5698/67b373c6-4c6f-443b-8cb0-0986d7c76598/outputs
-# GetStatus : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5028/v1.0/services/ws_filtrunwrInterf/5698/67b373c6-4c6f-443b-8cb0-0986d7c76598
-# GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5028/v1.0/services
-# DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5028/v1.0/services/ws_filtrunwrInterf
-#
-# Note PHA 20170418 : Code dérivé du modèle asynchrone ws_coregListInterf en vue du codage final
-#
+"""Fonction : 
+Aplatir, filtrer et dérouler les interférogrammes calculés. 
+
+Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
+
+Utilisation des arguments : 
+request.json est un hypercube associatif qui reprend la structure du json envoye.
+request.values est un tableau associatif qui reprend les variables transmises en mode key-value pair (?toto=156&mode=sync)
+
+Note PHA 20170418 : Code dérivé du modèle asynchrone ws_coregListInterf en vue du codage final
+"""
 
 import os
 import logging

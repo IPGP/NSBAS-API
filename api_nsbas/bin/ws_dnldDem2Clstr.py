@@ -2,27 +2,16 @@
 # -*- coding: utf-8 -*-
 # Webservice ws_dnldDem2Clstr , ex WS1
 #
-# Fonction :
-# Obtenir sur le cluster de calcul un modèle numérique de terrain (MNT ou DEM) à 30m qui couvre l'ensemble de l'image radar (ensemble des 3 sous-fauchées).
-#
-# Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
-# Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
-#
-# Utilisation des arguments :
-# request.json est un hypercube associatif qui reprend la structure du json envoye.
-# request.values est un tableau associatif qui reprend les variables transmises en mode key-value pair (?toto=156&mode=sync)
-#
-# Tests :
-# Tester
-# Execute avec curl -i -umiguel:python -H "Content-Type: application/json" -X POST -d '[{"processToken" : "f5e6f9g8t5232n5d5d6s56"},{ "type": "Feature","bbox": [ 2.8784608840942383 , 42.694144332492674 , 2.8876025772094727 , 42.69814795493774] }]' http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services/ws_dnldDem2Clstr?mode=async
-#
-# GetResult : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services/ws_dnldDem2Clstr/5698/67b373c6-4c6f-443b-8cb0-0986d7c76598/outputs
-# GetStatus : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services/ws_dnldDem2Clstr/5698/67b373c6-4c6f-443b-8cb0-0986d7c76598
-# GetCapabilities : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services
-# DescribeProcess : curl -i -umiguel:python -X GET http://gravi155.step.univ-paris-diderot.fr:5023/v1.0/services/ws_dnldDem2Clstr
-#
-#
-#
+"""Fonction :
+Obtenir sur le cluster de calcul un modèle numérique de terrain (MNT ou DEM) à 30m qui couvre l'ensemble de l'image radar (ensemble des 3 sous-fauchées).
+
+Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
+
+Utilisation des arguments :
+request.json est un hypercube associatif qui reprend la structure du json envoye.
+request.values est un tableau associatif qui reprend les variables transmises en mode key-value pair (?toto=156&mode=sync)
+"""
 
 import os
 from flask import Flask, jsonify, abort, request, make_response, url_for
