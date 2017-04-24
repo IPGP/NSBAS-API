@@ -10,9 +10,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'httpPassWord' : 'http authentication password',\
  'wsHostName' : 'Web services platform host name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
- 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
- 'clstrUserName' : 'User name to be used on the cluster',\
- 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
+  'clstrUserName' : 'User name to be used on the cluster',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
  'debugMode' : 'true or false, depending'}
 
@@ -22,9 +20,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'httpPassWord' : 'http authentication password',\
  'wsHostName' : 'Web services platform host name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
- 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
  'clstrUserName' : 'User name to be used on the cluster',\
- 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
  'debugMode' : 'true or false, depending'}
 """
@@ -34,9 +30,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'httpPassWord' : 'http authentication password',\
  'wsHostName' : 'Web services platform host name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
- 'clstrSshKey' : 'Cluster ssh key...(obsolete?)',\
  'clstrUserName' : 'User name to be used on the cluster',\
- 'clstrPassWord' : 'Password of the cluster user name...(obsolete?)',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
  'debugMode' : 'true or false, depending'}
 """
