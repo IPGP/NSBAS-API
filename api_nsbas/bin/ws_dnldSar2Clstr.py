@@ -38,6 +38,12 @@ import lib_ws.ws_connect as lws_connect
 this = sys.modules[__name__]
 working_dir = "WS_img_download"
 
+# Incluons un fichier de parametres communs a tous les webservices
+import parametres
+config = parametres.configdic
+remote_prefix = config["clstrBaseDir"]
+ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
+
 # Preparons la connexion ssh via Paramiko
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -52,14 +58,7 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 wsName = 'ws_dnldSar2Clstr'
 # what about: wsName= __file__[:-3] ?
 wsVersion = config['apiVersion']
-wsPortNumber = config['ws_dnldSar2Clstr_PN']
-
-# Incluons un fichier de parametres communs a tous les webservices
-import parametres
-
-config = parametres.configdic
-remote_prefix = config["clstrBaseDir"]
-ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
+wsPortNumber = int(config['ws_dnldSar2Clstr_PN'])
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()

@@ -46,7 +46,7 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 # Parametres specifiques a ce webservice
 wsName = 'ws_atmoCorr'
 wsVersion = config['apiVersion']
-wsPortNumber = config['ws_atmoCorr_PN']
+wsPortNumber = int(config['ws_atmoCorr_PN'])
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
