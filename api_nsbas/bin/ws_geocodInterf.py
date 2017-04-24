@@ -47,8 +47,8 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # Parametres specifiques a ce webservice
 wsName = 'ws_geocodInterf'
-wsVersion = '1.0'
-wsPortNumber = 5029
+wsVersion = config['apiVersion']
+wsPortNumber = config['ws_geocodInterf_PN']
 
 app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()

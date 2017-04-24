@@ -51,8 +51,8 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 # Parametres specifiques a ce webservice
 wsName = 'ws_dnldSar2Clstr'
 # what about: wsName= __file__[:-3] ?
-wsVersion = '1.0'
-wsPortNumber = 5022
+wsVersion = config['apiVersion']
+wsPortNumber = config['ws_dnldSar2Clstr_PN']
 
 # Incluons un fichier de parametres communs a tous les webservices
 import parametres
