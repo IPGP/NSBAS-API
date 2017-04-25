@@ -118,7 +118,11 @@ def execute():
     """
     if request.values['mode'] == "async" :
         # TODO : estimer dynamiquement walltime
-        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": remote_prefix}
+        process_token = request.json['processToken']
+        subswath = request.json['subSwath']
+        logging.critical("getting: token %s swath %s", str(process_token), str(subswath))
+        token_dir = config['clstrBaseDir'] + '/' + process_token
+        process_ressources = {"nodes" : 1, "cores" : 4, "walltime" : "10:00:00", "workdir": token_dir}
         ret = "Error"
         error = "OK"
         job_id = -1
@@ -131,12 +135,7 @@ def execute():
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
-        token_dir = config['clstrBaseDir'] + '/' + process_token
-        dem_dir = token_dir + '/DEM'
-        slc_dir = token_dir + '/SLC'
-        command = " ".join(["mkdir", dem_dir + '; ',
-                            "nsb_getDemFile.py", "fromRadarImage",
-                            slc_dir, dem_dir])
+        command = " ".join(["nsb_getListInterfero.py", "nsbas.proc"])
         try:
             logging.critical("launching command: %s", command)
             job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(process_token),
