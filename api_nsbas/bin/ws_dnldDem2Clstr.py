@@ -140,7 +140,7 @@ def execute():
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
-        token_dir = config['clstrBaseDir'] + '/' + process_token
+        token_dir = config['clstrDataDir'] + '/' + process_token
         dem_dir = token_dir + '/DEM'
         slc_dir = token_dir + '/SLC'
         command = " ".join(["mkdir", dem_dir + '; ',

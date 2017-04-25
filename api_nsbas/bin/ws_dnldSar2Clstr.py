@@ -80,6 +80,7 @@ import parametres
 
 config = parametres.configdic
 remote_prefix = config["clstrBaseDir"]
+remote_data_prefix = config["clstrDataDir"]
 ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
 
 app = Flask(__name__, static_url_path = "")
@@ -200,7 +201,7 @@ def execute():
         error = ""
         ssh_client = None
         process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir":
-                remote_prefix}
+               remote_data_prefix}
         ret = "Error"
         try:
             ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
@@ -214,7 +215,7 @@ def execute():
         command = " ".join([remote_prefix + "/bin/wsc_downloadPepsData.py", \
                             "-v", "4",\
                             "-token", str(processToken), \
-                            "-wd", remote_prefix + "/" + str(processToken) + "/SLC"] + ids)
+                            "-wd", remote_data_prefix + "/" + str(processToken) + "/SLC"] + ids)
         try:
             logging.critical("launching command: %s", command)
             job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(processToken),
