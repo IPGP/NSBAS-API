@@ -125,6 +125,7 @@ def execute():
         logging.critical("getting: swath %s", str(request.json[2]['subSwath']))
         process_token = request.json[0]['processToken']
         str_swath = str(request.json[2]['subSwath'])
+        token_dir = config['clstrDataDir'] + '/' + process_token
         # En mode synchrone, le webservice donne illico sa réponse GetResult
         try:
             ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
@@ -136,19 +137,20 @@ def execute():
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
         # command is not expensive -> we can run it on frontal
-        token_dir = config['clstrBaseDir'] + '/' + process_token
         dem_dir = token_dir + '/DEM'
         slc_dir = token_dir + '/SLC'
-        command = " ".join(["cd", token_dir, ";" "nsb_mkworkdir.py -s s1 -d", dem_dir, "SLC", "iw" + str_swath])
+        command = " ".join(["cd", token_dir, ";", "nsb_mkworkdir.py -s s1 -d", dem_dir, "SLC", "iw" + str_swath])
         logging.critical("command = %s", command)
+        ret = None
         try:
-            ret = lsw_connect.run_on_frontal(ssh_client, command)
+            ret = lws_connect.run_on_frontal(ssh_client, command)
         except Exception as excpt:
+            logging.critical("ERROR: " + str(ret) + "--" + str(excpt))
             resultJson = {"job_id" : "NaN", "processToken": process_token}
             ssh_client.close()
             return jsonify(resultJson), 500
         ssh_client.close()
-        resultJson = { "job_id" : "NaN", "processToken": processToken }
+        resultJson = { "job_id" : "NaN", "processToken": process_token }
         return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
