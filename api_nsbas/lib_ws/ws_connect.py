@@ -87,8 +87,8 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
 
 def run_on_frontal(ssh_client, command):
     """ run on the frontal the given command ie without oarsub"""
+    logging.critical("run on frontal: %s", command)
     try:
-        logging.critical("launching command: %s", command)
         ret_tuple = ssh_client.exec_command(command)
         return ret_tuple[1].read()
     except Exception as excpt:
