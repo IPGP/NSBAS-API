@@ -12,6 +12,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
   'clstrUserName' : 'User name to be used on the cluster',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
+ 'clstrDataDir' : 'Path of the ws_cluster director where to hold the data', \
  'apiVersion' : '1.0', \
  'ws_dnldSar2Clstr_PN' : '1111', \
  'ws_dnldDem2Clstr_PN' : '2222', \
