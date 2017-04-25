@@ -3,7 +3,7 @@
 # Webservice ws_atmoCorr , ex WS5
 #
 """Fonction :
-"""Appliquer les corrections atmosphériques aux interférogrammes.
+Appliquer les corrections atmosphériques aux interférogrammes.
 
 Ce code est inspiré de https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 Pour en savoir plus : http://flask.pocoo.org/docs/0.12/quickstart/
@@ -13,7 +13,6 @@ request.json est un hypercube associatif qui reprend la structure du json envoye
 request.values est un tableau associatif qui reprend les variables transmises en mode key-value pair (?toto=156&mode=sync)
 
 Note PHA 20170418 : Code dérivé du modèle asynchrone ws_coregListInterf en vue du codage final
-"""
 """
 
 import os
