@@ -116,7 +116,8 @@ def execute():
 
     if request.values['mode'] == "async":
         # TODO estimer dynamiquement walltime
-        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": remote_prefix}
+        token_dir = config['clstrDataDir'] + '/' + process_token
+        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": token_dir}
         ret = "Error"
         error = "OK"
         job_id = -1
@@ -129,7 +130,6 @@ def execute():
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
-        token_dir = config['clstrDataDir'] + '/' + process_token
         dem_dir = token_dir + '/DEM'
         slc_dir = token_dir + '/SLC'
         command = " ".join(["mkdir", dem_dir + '; ',
