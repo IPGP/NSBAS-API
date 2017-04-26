@@ -65,11 +65,14 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     if not  "workdir" in task_desc:
         logging.error("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
         raise ValueError("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
-    oarsub_prefix = "oarsub -n {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
-            format(token, task_desc["nodes"], task_desc["cores"], task_desc["walltime"],
-                    task_desc["workdir"])
-    oarsub_suffix = "mkdir -p {}/LOG; mv OAR*{}*stderr OAR*{}*.stdout {}/LOG/".format(token,
-            token, token, token)
+    log_dir = '{}/LOG'.format(task_desc["workdir"])
+    err_log = '{}/OAR_%jobname%_%jobid%.err'.format(log_dir, token)
+    out_log = '{}/OAR_%jobname%_%jobid%.out'.format(log_dir, token)
+    oarsub_prefix = "mkdir -p {}; oarsub -n {} -O {} -E {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
+            format(log_dir, token, out_log, err_log, task_desc["nodes"],
+                    task_desc["cores"], task_desc["walltime"], task_desc["workdir"])
+    oarsub_suffix = ""
+    #mv OAR*{}*stderr OAR*{}*.stdout {}/{}/LOG/".format(log_dir, token, token, log_dir)
     logging.info("oar prefix: %s", oarsub_prefix)
     try:
         command = oarsub_prefix + " '" + command  + "'; " + oarsub_suffix
