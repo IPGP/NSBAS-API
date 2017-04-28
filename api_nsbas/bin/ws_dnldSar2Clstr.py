@@ -185,8 +185,10 @@ def execute():
         job_id = 0
         error = ""
         ssh_client = None
-        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir":
-               remote_data_prefix}
+        token_dir = config['clstrDataDir'] + '/' + process_token
+        log_dir = "{}/LOG".format(token_dir)
+        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00",
+                "workdir": token_dir, "logdir" : log_dir}
         ret = "Error"
         try:
             ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
