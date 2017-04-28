@@ -97,7 +97,7 @@ def describe_process():
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>', methods = ['GET'])
 @auth.login_required
 def get_status(job_id,process_token):
-    statusJson = getJobStatus(job_id,process_token)
+    statusJson = lws_nsbas.getJobStatus(job_id,process_token)
     return jsonify(statusJson)
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
@@ -108,7 +108,7 @@ def execute():
 
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
         # Note PHA 20170418 : job_id et processToken ne semblent pas avoir de valeur
-        statusJson = getJobStatus(job_id,processToken)
+        statusJson = lws_nsbas.getJobStatus(job_id,processToken)
         return jsonify(statusJson), 201
     else :
         logging.critical("getting: token %s", str(request.json[0]['processToken']))
