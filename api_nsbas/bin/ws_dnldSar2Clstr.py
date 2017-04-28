@@ -91,7 +91,7 @@ def unauthorized():
 
 @app.errorhandler(400)
 def not_found(error):
-    """ build a anwser correspoding to the error string (handling 400 error)
+    """ build a anwser corresponding to the error string (handling 400 error)
     :param error: the error string
     :type error: str
     :return: the formated error
@@ -101,7 +101,7 @@ def not_found(error):
 
 @app.errorhandler(404)
 def not_found(error):
-    """ build a anwser correspoding to the error string (handling 404 error)
+    """ build a anwser corresponding to the error string (handling 404 error)
     :param error: the error string
     :type error: str
     :return: the formated error
@@ -164,8 +164,6 @@ def execute():
  L'execute synchrone renvoit le resultat et la reponse http 200 : OK
  L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201
  ou celle du GetResult et la reponse http 200, selon
- Le script WS0_samy.py utilisait une chaine passee comme valeur d'une variable de formulaire "jsondata" et formate
- dans le style {"IDS":"987,654,321"}
  L'execute du webservice ws_dnldSar2Clstr doit
  - prendre en arguments, dans les data de la requete http, un json listant les ids des images Peps a telecharger,
  ex : [{"pepsDataIds" :[{"id":"56987456"} ,

@@ -11,8 +11,8 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'wsHostName' : 'Web services platform host name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
   'clstrUserName' : 'User name to be used on the cluster',\
- 'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
- 'clstrDataDir' : 'Path of the ws_cluster director where to hold the data', \
+ 'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster without trailing /', \
+ 'clstrDataDir' : 'Path of the ws_cluster director where to hold the data without trailing /', \
  'apiVersion' : '1.0', \
  'mpiCmd' : 'mpiexec', \
  'ws_dnldSar2Clstr_PN' : '1111', \
