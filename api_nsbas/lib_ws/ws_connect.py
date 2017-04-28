@@ -65,7 +65,9 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     if not  "workdir" in task_desc:
         logging.error("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
         raise ValueError("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
-    log_dir = '{}/LOG'.format(task_desc["workdir"])
+    log_dir = task_desc["workdir"]
+    if "logdir" in task_desc:
+        log_dir = task_desc["logdir"]
     err_log = '{}/OAR_%jobname%_%jobid%.err'.format(log_dir, token)
     out_log = '{}/OAR_%jobname%_%jobid%.out'.format(log_dir, token)
     oarsub_prefix = "mkdir -p {}; oarsub -n {} -O {} -E {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
