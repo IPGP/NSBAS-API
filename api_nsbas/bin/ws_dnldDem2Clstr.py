@@ -117,7 +117,8 @@ def execute():
     if request.values['mode'] == "async":
         # TODO estimer dynamiquement walltime
         token_dir = config['clstrDataDir'] + '/' + process_token
-        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00", "workdir": token_dir}
+        process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00",
+                "workdir": token_dir}
         ret = "Error"
         error = "OK"
         job_id = -1
