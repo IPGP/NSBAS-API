@@ -185,7 +185,7 @@ def execute():
         job_id = 0
         error = ""
         ssh_client = None
-        token_dir = config['clstrDataDir'] + '/' + process_token
+        token_dir = config['clstrDataDir'] + '/' + processToken
         log_dir = "{}/LOG".format(token_dir)
         process_ressources = {"nodes" : 1, "cores" : 1, "walltime" : "00:50:00",
                 "workdir": token_dir, "logdir" : log_dir}
