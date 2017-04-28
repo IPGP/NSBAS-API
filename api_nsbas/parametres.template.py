@@ -14,6 +14,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster', \
  'clstrDataDir' : 'Path of the ws_cluster director where to hold the data', \
  'apiVersion' : '1.0', \
+ 'mpiCmd' : 'mpiexec', \
  'ws_dnldSar2Clstr_PN' : '1111', \
  'ws_dnldDem2Clstr_PN' : '2222', \
  'ws_createProcFile_PN' : '3333', \
