@@ -121,7 +121,7 @@ def get_status(job_id, process_token):
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
 @auth.login_required
-@cross_origin({"origins": "null", "supports_credentials": True})
+#@cross_origin({"origins": "null", "supports_credentials": True})
 def execute():
     """ L'execute synchrone renvoit le resultat et la reponse http 200 : OK
      L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201 ou celle du GetResult et la reponse http 200, selon
