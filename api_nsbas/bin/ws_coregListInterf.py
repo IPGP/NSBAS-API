@@ -131,7 +131,7 @@ def execute():
     if request.values['mode'] == "async" :
         # TODO : estimer dynamiquement walltime
         process_token = request.json[0]['processToken']
-        subswath = request.json[1]['subSwath']
+        subswath = request.json[0]['subSwath']
         logging.critical("getting: token %s swath %s", str(process_token), str(subswath))
         token_dir = remote_data_prefix + '/' + process_token
         working_dir = token_dir + '/iw' + subswath
