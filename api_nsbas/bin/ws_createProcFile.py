@@ -104,44 +104,37 @@ def get_status(job_id,process_token):
 @auth.login_required
 def execute():
 
-    if request.values['mode'] == "async" :
-
-        # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
-        # Note PHA 20170418 : job_id et processToken ne semblent pas avoir de valeur
-        statusJson = lws_nsbas.getJobStatus(job_id,processToken)
-        return jsonify(statusJson), 201
-    else :
-        logging.critical("getting: token %s", str(request.json[0]['processToken']))
-        logging.critical("getting: swath %s", str(request.json[2]['subSwath']))
-        process_token = request.json[0]['processToken']
-        str_swath = str(request.json[2]['subSwath'])
-        token_dir = config['clstrDataDir'] + '/' + process_token
-        # En mode synchrone, le webservice donne illico sa réponse GetResult
-        try:
-            ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
-        except Exception as excpt:
-            logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
-            raise excpt
-        if ssh_client is None:
-            logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
-            raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
-        logging.info("connection OK")
-        # command is not expensive -> we can run it on frontal
-        dem_dir = token_dir + '/DEM'
-        slc_dir = token_dir + '/SLC'
-        command = " ".join(["cd", token_dir, ";", "nsb_mkworkdir.py -s s1 -d", dem_dir, "SLC", "iw" + str_swath])
-        logging.critical("command = %s", command)
-        ret = None
-        try:
-            ret = lws_connect.run_on_frontal(ssh_client, command)
-        except Exception as excpt:
-            logging.critical("ERROR: " + str(ret) + "--" + str(excpt))
-            resultJson = {"job_id" : "NaN", "processToken": process_token}
-            ssh_client.close()
-            return jsonify(resultJson), 500
+    logging.critical("getting: token %s", str(request.json[0]['processToken']))
+    logging.critical("getting: swath %s", str(request.json[1]['subSwath']))
+    process_token = request.json[0]['processToken']
+    str_swath = str(request.json[1]['subSwath'])
+    token_dir = config['clstrDataDir'] + '/' + process_token
+    # En mode synchrone, le webservice donne illico sa réponse GetResult
+    try:
+        ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
+    except Exception as excpt:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise excpt
+    if ssh_client is None:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
+    logging.info("connection OK")
+    # command is not expensive -> we can run it on frontal
+    dem_dir = token_dir + '/DEM'
+    slc_dir = token_dir + '/SLC'
+    command = " ".join(["cd", token_dir, ";", "nsb_mkworkdir.py -s s1 -d", dem_dir, "SLC", "iw" + str_swath])
+    logging.critical("command = %s", command)
+    ret = None
+    try:
+        ret = lws_connect.run_on_frontal(ssh_client, command)
+    except Exception as excpt:
+        logging.critical("ERROR: " + str(ret) + "--" + str(excpt))
+        resultJson = {"job_id" : "NaN", "processToken": process_token}
         ssh_client.close()
-        resultJson = { "job_id" : "NaN", "processToken": process_token }
-        return jsonify(resultJson), 200
+        return jsonify(resultJson), 500
+    ssh_client.close()
+    resultJson = { "job_id" : "NaN", "processToken": process_token }
+    return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required
