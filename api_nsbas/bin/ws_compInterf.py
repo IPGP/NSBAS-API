@@ -76,7 +76,8 @@ def get_capabilities():
 
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['GET'])
-@auth.login_requireddef describe_process():
+@auth.login_required
+def describe_process():
     return jsonify( {
         "id": "\"+wsName+\"",
         "label": "ForM@Ter/Etalab ws_compInterf webservice",
@@ -123,7 +124,6 @@ def get_status(job_id, process_token):
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
 @auth.login_required
-@cross_origin({"origins": "null", "supports_credentials": True})
 def execute():
     """ L'execute synchrone renvoit le resultat et la reponse http 200 : OK
      L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201 ou celle du GetResult et la reponse http 200, selon
