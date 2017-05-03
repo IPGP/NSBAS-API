@@ -138,8 +138,8 @@ def execute():
     """
     if request.values['mode'] == "async" :
         # TODO : estimer dynamiquement walltime
-        process_token = request.json['processToken']
-        subswath = request.json['subSwath']
+        process_token = request.json[0]['processToken']
+        subswath = request.json[1]['subSwath']
         logging.critical("getting: token %s swath %s", str(process_token), str(subswath))
         token_dir = remote_data_prefix + '/' + process_token
         working_dir = token_dir + '/iw' + subswath
@@ -157,7 +157,7 @@ def execute():
         if ssh_client is None:
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
-        logging.info("con?!?jedi=1, nection OK")?!? (param iterable) ?!?jedi?!?"
+#        logging.info("con?!?jedi=1, nection OK")?!? (param iterable) ?!?jedi?!?"
         command = " ".join('nsb_make_corr_atmo_erai.py', '-v', 'nsbas.proc'])
         try:
             logging.critical("launching command: %s", command)
