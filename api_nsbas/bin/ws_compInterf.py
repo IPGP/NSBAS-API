@@ -45,7 +45,7 @@ logging.getLogger('flask_cors').lev = logging.DEBUG
 # Parametres specifiques a ce webservice
 wsName = 'ws_compInterf'
 wsVersion = config['apiVersion']
-wsPortNumber = int(config[wsName + wsName + '_PN'])
+wsPortNumber = int(config[wsName + '_PN'])
 
 #app = Flask(__name__, static_url_path = "")
 auth = HTTPBasicAuth()
