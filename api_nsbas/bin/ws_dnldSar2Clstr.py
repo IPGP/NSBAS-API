@@ -204,10 +204,11 @@ def execute():
         except Exception as excpt:
             error = error + "fail to run command on server: {}".format(excpt)
             logging.error(error)
-        ssh_client.close()
+
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
-        statusJson = lws_nsbas.getJobStatus(job_id, processToken, error)
-        return jsonify(statusJson), 201
+        status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
+        ssh_client.close()
+        return jsonify(status_json), 201
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
         resultJson = {"job_id" : job_id , "processToken": processToken}

@@ -155,7 +155,7 @@ def execute():
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
-        command = " ".join('nsb_make_corr_atmo_erai.py', 'nsbas.proc'])
+        command = " ".join('nsb_make_corr_atmo_erai.py', 'nsbas.proc')
         try:
             logging.critical("launching command: %s", command)
             job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(process_token),
@@ -164,13 +164,13 @@ def execute():
         except Exception as excpt:
             error = error + "fail to run command on server: {}".format(excpt)
             logging.error(error)
-        ssh_client.close()
 
-        # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus,
-        #sans attendre d'avoir terminé
-        status = get_status(job_id, process_token)
-        logging.critical("response=%s", status)
-        return status, 201
+        # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
+        status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
+        logging.critical("response=%s", status_json)
+        ssh_client.close()
+        return jsonify(status_json), 201       
+    
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
         resultJson = lws_nsbas.getJobStatus('NaN', process_token, "No sync mode allowed")
