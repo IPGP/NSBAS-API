@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-import argparse
+mport argparse
 import os
 import sys
 import re
@@ -55,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument('--logdir', type=str, help='the directory that contains logs')
     parser.add_argument('--oarid', type=str, help='the process id')
 
-    args = parser.parse_args(Running)
+    args = parser.parse_args()
     #pid = get_oar_id(args.token, args.logdir)
     pid = args.oarid
 

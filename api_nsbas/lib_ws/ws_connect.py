@@ -5,6 +5,7 @@ import re
 import logging
 import paramiko
 import parametres
+import json
 
 def connect_with_sshconfig(cluster, ssh_config_file="~/.ssh/config"):
     """
@@ -115,15 +116,17 @@ def get_job_status(ssh_client, token, oar_id):
     logging.critical("info for status: command=%s", command)
     ret = run_on_frontal(ssh_client, command)
     logging.critical("status: %s", ret)
-    
-    #Running, toLaunch, Terminated doivent devenir Accepted, Terminated, Failed
-    if ret['errorMessage'] <> "" :
+    #ret = json.dumps({'oarStatus' : '' , 'returnCode' : '' , 'errorMessage' : ''})
+    ret_json = json.loads(ret) 
+    #print "#################"+ repr(ret_json)
+    #Running, toLaunch, Terminated doivent devenir Accepted, Faild, Terminated
+    if ret_json['errorMessage'] <> "" :
         percentDone = 0
         status = "Failed"        
-    elif ret['oarStatus'] == "toLaunch" :
+    elif ret_json['oarStatus'] == "toLaunch" :
         percentDone = 0
         status = "Accepted"
-    elif ret['oarStatus'] == "Terminated" :
+    elif ret_json['oarStatus'] == "Terminated" :
         percentDone = 100
         status = "Terminated"
     else :
