@@ -96,9 +96,28 @@ def describe_process():
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>', methods = ['GET'])
 @auth.login_required
-def get_status(job_id,process_token):
-    statusJson = lws_nsbas.getJobStatus(job_id,process_token)
-    return jsonify(statusJson)
+def get_status(job_id, process_token):
+    """ returns the status of the given process id and process token
+    :param job_id: the job id
+    :type job_id: int?
+    :param process_token: the token being queried
+    :type process_token: str (uuid)
+    :return: the status of the task
+    :rtype: str (containing a json)
+    """
+    ssh_client = None
+    try:
+        ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
+    except Exception as excpt:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise excpt
+    if ssh_client is None:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
+    logging.info("get_status for token %s", process_token)
+    status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
+    ssh_client.close()
+    return jsonify(status_json)
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
 @auth.login_required

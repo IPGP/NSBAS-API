@@ -117,9 +117,8 @@ def get_status(job_id, process_token):
         logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
         raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
     logging.info("get_status for token %s", process_token)
-    status = lws_connect.get_job_status(ssh_client, job_id)
+    status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
     ssh_client.close()
-    status_json = lws_nsbas.getJobStatus(job_id, process_token, status)
     return jsonify(status_json)
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
