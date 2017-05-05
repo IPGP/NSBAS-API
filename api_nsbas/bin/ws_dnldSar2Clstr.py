@@ -148,7 +148,7 @@ def get_status(job_id,process_token):
         logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
         raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
     logging.info("get_status for token %s", process_token)
-    status_json = lws_connect.get_job_status(ssh_client, job_id)
+    status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
     ssh_client.close()
     return jsonify(status_json)
 
@@ -174,7 +174,7 @@ def execute():
     ids = [numid['id'] for numid in request.json[0]['pepsDataIds']]
 
     if request.values['mode'] == "async":
-        print ids
+        #print ids
         job_id = 0
         error = ""
         ssh_client = None
