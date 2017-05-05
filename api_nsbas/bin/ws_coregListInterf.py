@@ -167,8 +167,8 @@ def execute():
     
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
-        resultJson = lws_nsbas.getJobStatus('NaN', process_token, "No sync mode allowed")
-        return resultJson, 200
+        resultJson = { "job_id" : "NaN" , "processToken": request.json[0]['processToken'] }
+        return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required

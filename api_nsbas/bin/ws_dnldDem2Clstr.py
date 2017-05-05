@@ -170,7 +170,7 @@ def execute():
         return jsonify(status_json), 201
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
-        resultJson = {"job_id" : job_id , "processToken": process_token}
+        resultJson = { "job_id" : "NaN" , "processToken": request.json[0]['processToken'] }
         return jsonify(resultJson), 200
 
 

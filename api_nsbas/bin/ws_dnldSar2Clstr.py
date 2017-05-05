@@ -211,7 +211,7 @@ def execute():
         return jsonify(status_json), 201
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
-        resultJson = {"job_id" : job_id , "processToken": processToken}
+        resultJson = {"job_id" : "Nan" , "processToken": processToken}
         return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])

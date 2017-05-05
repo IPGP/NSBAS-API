@@ -129,7 +129,6 @@ def get_status(job_id, process_token):
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])
 @auth.login_required
-@cross_origin({"origins": "null", "supports_credentials": True})
 def execute():
     """ L'execute synchrone renvoit le resultat et la reponse http 200 : OK
      L'execute asynchrone doit renvoyer la reponse du GetStatus et la reponse http 201 ou celle du GetResult et la reponse http 200, selon
@@ -175,8 +174,8 @@ def execute():
         return jsonify(status_json), 201   
     else :
         # En mode synchrone, le webservice donne illico sa réponse GetResult
-        resultJson = lws_nsbas.getJobStatus('NaN', process_token, "No sync mode allowed")
-        return resultJson, 200
+        resultJson = { "job_id" : "NaN" , "processToken": request.json[0]['processToken'] }
+        return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required
