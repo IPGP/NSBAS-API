@@ -117,16 +117,16 @@ def get_job_status(ssh_client, token, oar_id):
     logging.critical("status: %s", ret)
     
     #Running, toLaunch, Terminated doivent devenir Accepted, Terminated, Failed
-    if ret.error == "True"
+    if ret['errorMessage'] <> "" :
         percentDone = 0
         status = "Failed"        
-    else if ret.oarStatus == "toLaunch" 
+    elif ret['oarStatus'] == "toLaunch" :
         percentDone = 0
         status = "Accepted"
-    else if ret.oarStatus == "Terminated"
+    elif ret['oarStatus'] == "Terminated" :
         percentDone = 100
         status = "Terminated"
-    else
+    else :
         percentDone = 50
         status = "Accepted"            
     

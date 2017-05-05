@@ -62,8 +62,8 @@ if __name__ == "__main__":
     # check if it is an oarid
     #print "{} ({})".format(get_oar_status(pid), get_return_code(pid)) 
     # Les messages d'erreur polluent la sortie standard de ce script, en l'occurence ce json
-    # TODO : Trouver un moyen de les résumer dans le json de sortie sous forme de l'attribut "error" = "True" ?
-    print json.dumps({'oarStatus' : get_oar_status(pid) , 'returnCode' : get_return_code(pid) , 'error' : "False"})
+    # TODO : Trouver un moyen de les résumer dans le json de sortie sous forme de l'attribut "errorMessage", vide par défaut. 
+    print json.dumps({'oarStatus' : get_oar_status(pid) , 'returnCode' : get_return_code(pid) , 'errorMessage' : ''})
     sys.exit(0)
 
 
