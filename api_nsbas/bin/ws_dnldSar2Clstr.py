@@ -34,10 +34,6 @@ import paramiko, uuid
 import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
-# managing local config (to be put in parameters)
-this = sys.modules[__name__]
-working_dir = "WS_img_download"
-
 # Incluons un fichier de parametres communs a tous les webservices
 import parametres
 config = parametres.configdic
@@ -152,9 +148,8 @@ def get_status(job_id,process_token):
         logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
         raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
     logging.info("get_status for token %s", process_token)
-    status = lws_connect.get_job_status(ssh_client, job_id)
+    status_json = lws_connect.get_job_status(ssh_client, job_id)
     ssh_client.close()
-    status_json = lws_nsbas.getJobStatus(job_id, process_token, status)
     return jsonify(status_json)
 
 @app.route('/v' + wsVersion + '/services/'+wsName, methods = ['POST'])

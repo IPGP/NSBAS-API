@@ -47,7 +47,7 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     :param ssh_client: the paramiko client
     :param command: the command to run on  machine
     :type command: string
-    :param token: the token that was assigned when launging the job
+    :param token: the token that was assigned when launching the job
     :type token: string (uuid)
     :param task_desc: the description of the task
     :type task_desc: dictionnary describing the walltime, the number of cores,
@@ -100,20 +100,45 @@ def run_on_frontal(ssh_client, command):
         logging.critical("fail to execute command '%s':  %s'", command, excpt)
         raise ValueError("fail to execute command '%s':  %s'", command, excpt)
 
-def get_job_status(ssh_client, oar_id):
+def get_job_status(ssh_client, token, oar_id):
     """ get the job id from the token
         the id can be either a pid or a oar id
 
     :param oar_id: the oar id of the process
     :type token: string
-    :return: the a string representing the status (and the cmd error code)
+    :param token: the token that was assigned when launching the job
+    :type token: string (uuid)
+    :return: a json structure presenting the status (and the cmd error code)
     :type: str
     """
     command = "python ws_cluster/bin/wsc_get_status.py --oarid {}".format(oar_id)
     logging.critical("info for status: command=%s", command)
     ret = run_on_frontal(ssh_client, command)
     logging.critical("status: %s", ret)
-    return ret
+    
+    #Running, toLaunch, Terminated doivent devenir Accepted, Terminated, Failed
+    if ret.error == "True"
+        percentDone = 0
+        status = "Failed"        
+    else if ret.oarStatus == "toLaunch" 
+        percentDone = 0
+        status = "Accepted"
+    else if ret.oarStatus == "Terminated"
+        percentDone = 100
+        status = "Terminated"
+    else
+        percentDone = 50
+        status = "Accepted"            
+    
+    jobStatus = {
+        "StatusInfo": {
+        "JobID": oar_id,
+        "processToken" : token,
+        "Status": "" +status+ "",
+        "Progress": percentDone
+        }
+    }
+    return jobStatus
 
 def test_connect_luke(cluster):
     """basic testing of connect with cluster config
