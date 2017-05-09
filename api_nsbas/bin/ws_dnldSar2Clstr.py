@@ -206,7 +206,7 @@ def execute():
             logging.error(error)
 
         # Des lors qu'il est lance, le webservice donne son jeton via son GetStatus, sans attendre d'avoir terminé
-        status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
+        status_json = lws_connect.get_job_status(ssh_client, processToken, job_id)
         ssh_client.close()
         return jsonify(status_json), 201
     else :
