@@ -90,7 +90,7 @@ def describe_process():
                            "subSwath" : "<subswathnb>"}
                          ],
               "outputs": [
-                          {"jobId" : "<jobId>",
+                          {"job_id" : "<jobId>",
                            "processToken" : "<token>",
                            "resNames" :[
                                        {"resName" : "<resName1>" , "resURI" : "<resURI1>"},
@@ -111,7 +111,7 @@ def get_status(job_id, process_token):
     :param process_token: the token being queried
     :type process_token: str (uuid)
     :return: the status of the task
-    :rtype: str (containing a json)
+    :type: str (containing a json)
     """
     ssh_client = None
     try:
@@ -157,7 +157,10 @@ def execute():
             logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
             raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
         logging.info("connection OK")
-        command = " ".join(['nsb_make_geomaptans.py', 'nsbas.proc', '4'])
+#        command = " ".join(['nsb_make_geomaptrans.py', 'nsbas.proc', '4'])
+        publishDir = "".join("/", config["apiVersion"],"/services/ws_dnldResult/" , process_token)
+        command = " ".join(['wsc_geocod-publishInter.sh', config["thumbnailsWidth"] , publishDir])
+        
         try:
             logging.critical("launching command: %s", command)
             job_id = lws_connect.run_on_cluster_node(ssh_client, command, str(process_token),
@@ -180,11 +183,55 @@ def execute():
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required
 def get_result(job_id,process_token):
-    # Lorsqu'il est interrogé uniquement à fin de suivi,
-    # le webservice a besoin du job Id et, par sécurité,
-    # du jeton de suivi du processus de calcul pour répondre
-    # On les trouve dans les paramètres de l'url
+   """ returns the status of the given process id and process token
+    :param job_id: the job id
+    :type job_id: int?
+    :param process_token: the token being queried
+    :type process_token: str (uuid)
+    :return: the results of the task
+    :type: str (containing a json)
+    """
+    ssh_client = None
+    try:
+        ssh_client = lws_connect.connect_with_sshconfig(config, ssh_config_file)
+    except Exception as excpt:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise excpt
+    if ssh_client is None:
+        logging.critical("unable to log on %s, ABORTING", config["clstrHostName"])
+        raise ValueError("unable to log on %s, ABORTING", config["clstrHostName"])
+    logging.info("get_status for token %s", process_token)
+    status_json = lws_connect.get_job_status(ssh_client, process_token, job_id)
+    
+    """Lorsqu'il est interrogé uniquement à fin de suivi, 
+    le webservice a besoin du job Id et, par sécurité,
+    du jeton de suivi du processus de calcul 
+    pour répondre un simple message d'attente
+    """
     resultJson = { "job_id" : job_id , "processToken": process_token }
+    
+    """Lorsque le process est terminé, le web-service renvoit les url de ses produits
+    """
+    statusTab=json.loads(status_json)
+    if statusTab['Status']=="Terminated":
+        """Lisons le contenu du repertoire de publication
+        """
+        publishDir = "".join(config["clstrIrodsDir"],"/", config["apiVersion"],"/services/ws_dnldResult/" , process_token)
+        command = "ils "+publishDir
+        logging.critical("list of results: command=%s", command)
+        ret = run_on_frontal(ssh_client, command)
+               
+        """ Elaborons la liste json des produits
+        """
+        resultJson={ "job_id" : job_id ,\
+                     "processToken": process_token ,\
+                     "resNames" :[{"resName" : "unw interferogram" , "resURI" : "<resURI1>"},\
+                                  {"resName" : "jpeg high resolution interferogram" , "resURI" : "<resURI2>"},\
+                                  {"resName" : "jpeg low resolution interferogram" , "resURI" : "<resURI3>"}
+                                ]
+                    }
+        
+    ssh_client.close()
     return jsonify(resultJson), 200
 
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>', methods = ['DELETE'])
