@@ -10,9 +10,10 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'httpPassWord' : 'http authentication password',\
  'wsHostName' : 'Web services platform host name',\
  'clstrHostName' : 'Computing cluster hostname seen from the API platform',\
-  'clstrUserName' : 'User name to be used on the cluster',\
+ 'clstrUserName' : 'User name to be used on the cluster',\
  'clstrBaseDir' : 'Path of the ws_cluster directory on the cluster without trailing /', \
  'clstrDataDir' : 'Path of the ws_cluster director where to hold the data without trailing /', \
+ 'clstrIrodsDir' : 'Path of the irods dir visible as https//<myapi.myserver.mydomain>/ /', \
  'apiVersion' : '1.0', \
  'mpiCmd' : 'mpiexec', \
  'ws_dnldSar2Clstr_PN' : '1111', \
@@ -23,6 +24,7 @@ configdic = {'httpUserName' : 'http authentication user name',\
  'ws_atmoCorr_PN' : '6666', \
  'ws_filtrunwrInterf_PN' : '7777', \
  'ws_geocodInterf_PN' : '8888', \
+ 'thumbnailsWidth' : 'Width of the interferograms thumbnails in px', \
  'debugMode' : 'true or false, depending'}
 
 
