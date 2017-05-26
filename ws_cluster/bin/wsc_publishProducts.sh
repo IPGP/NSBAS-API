@@ -27,9 +27,10 @@ do
     jpgname=`basename $unwname .unw`.jpg
     thname="th_"$jpgname
     echo $unwname $jpgname $thname
-	wsc_unw2jpg.py -i $jpgname -s $workdir 
-    wsc_unw2jpg.py -i $thname -s $workdir -w $thwidth 
-    iput $jpgname $irods_dir 
+	wsc_unw2jpg.py -i $unwname -s $jpgname -b p -C 95 
+    wsc_unw2jpg.py -i $unwname -s $thname -w $thwidth -b p -C 95 
+#    touch $jpgname $thname
+    iput $jpgname $thname $irods_dir 
 done
 
 cd .. 
