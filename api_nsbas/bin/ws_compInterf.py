@@ -21,7 +21,6 @@ import paramiko
 
 # Le module (bibliotheque) specifique des webservices NSBAS
 # Doit etre dans le PYTHON PATH
-import lib_ws.ws_nsbas as lws_nsbas
 import lib_ws.ws_connect as lws_connect
 
 # Incluons un fichier de parametres communs a tous les webservices
