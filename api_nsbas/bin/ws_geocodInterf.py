@@ -182,7 +182,8 @@ def execute():
 @app.route('/v' + wsVersion + '/services/'+wsName+'/<int:job_id>/<process_token>/outputs', methods = ['GET'])
 #@auth.login_required
 def get_result(job_id,process_token):
-   """ returns the status of the given process id and process token
+   """ returns the result of the given process on the subswath interferogram it transformed 
+   and the process token
     :param job_id: the job id
     :type job_id: int?
     :param process_token: the token being queried
@@ -209,7 +210,8 @@ def get_result(job_id,process_token):
     """
     resultJson = { "job_id" : job_id , "processToken": process_token }
     
-    """Lorsque le process est terminé, le web-service renvoit les url de ses produits
+    """Lorsque le process est terminé, le web-service renvoit les url de ses produits sur le subswath traité
+    (et non sur l'ensemble)
     """
     statusTab=json.loads(status_json)
     if statusTab['Status']=="Terminated":
