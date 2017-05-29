@@ -59,7 +59,7 @@ import parametres
 
 config = parametres.configdic
 wsVersion = config['apiVersion']
-wsPortNumber = int(config['ws_dnldSar2Clstr_PN'])
+wsPortNumber = int(config[wsName + '_PN'])
 remote_prefix = config["clstrBaseDir"]
 remote_data_prefix = config["clstrDataDir"]
 ssh_config_file = os.environ["HOME"] + "/" + ".ssh/config"
