@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import argparse
 import os
@@ -46,24 +47,24 @@ if __name__ == "__main__":
                 information are gathered from the log file with name
                 logdir/token.log
 
-                If logdir starts with /, it is consider absolute path name,
+                If logdir starts with /, it is considered absolute path name,
                 else relative to $HOME
-                this script returns R for running, T for terminated, E for error
+
                 """
 
     parser = argparse.ArgumentParser(description=main_help)
-    parser.add_argument('--retcode', action='store_true', help='prints the error code of the command instead of the oar status')
     parser.add_argument('--logdir', type=str, help='the directory that contains logs')
-    parser.add_argument('--token', type=str, help='the token')
+    parser.add_argument('--oarid', type=str, help='the process id')
 
     args = parser.parse_args()
-    pid = get_oar_id(args.token, args.logdir)
+    #pid = get_oar_id(args.token, args.logdir)
+    pid = args.oarid
 
     # check if it is an oarid
-    if args.retcode:
-        print get_return_code(pid)
-    else:
-        print get_oar_status(pid)
+    #print "{} ({})".format(get_oar_status(pid), get_return_code(pid)) 
+    # Les messages d'erreur polluent la sortie standard de ce script, en l'occurence ce json
+    # TODO : Trouver un moyen de les résumer dans le json de sortie sous forme de l'attribut "errorMessage", vide par défaut. 
+    print json.dumps({'oarStatus' : get_oar_status(pid) , 'returnCode' : get_return_code(pid) , 'errorMessage' : ''})
     sys.exit(0)
 
 

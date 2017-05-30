@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import re
 import logging
 import paramiko
 import parametres
+import json
 
 def connect_with_sshconfig(cluster, ssh_config_file="~/.ssh/config"):
     """
@@ -46,7 +48,7 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     :param ssh_client: the paramiko client
     :param command: the command to run on  machine
     :type command: string
-    :param token: the token that was assigned when launging the job
+    :param token: the token that was assigned when launching the job
     :type token: string (uuid)
     :param task_desc: the description of the task
     :type task_desc: dictionnary describing the walltime, the number of cores,
@@ -64,42 +66,82 @@ def run_on_cluster_node(ssh_client, command, token, task_desc):
     if not  "workdir" in task_desc:
         logging.error("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
         raise ValueError("ws_connect.py:run_on_cluster_node: task_desc should provide workdir key")
-    oarsub_prefix = "oarsub -n {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
-            format(token, task_desc["nodes"], task_desc["cores"], task_desc["walltime"],
-                    task_desc["workdir"])
+    log_dir = task_desc["workdir"]
+    if "logdir" in task_desc:
+        log_dir = task_desc["logdir"]
+    err_log = '{}/OAR_%jobname%_%jobid%.err'.format(log_dir, token)
+    out_log = '{}/OAR_%jobname%_%jobid%.out'.format(log_dir, token)
+    oarsub_prefix = "mkdir -p {}; oarsub -n {} -O {} -E {} -l /nodes={}/core={},walltime={} --project nsbas -d {}".\
+            format(log_dir, token, out_log, err_log, task_desc["nodes"],
+                    task_desc["cores"], task_desc["walltime"], task_desc["workdir"])
+    oarsub_suffix = ""
+    #mv OAR*{}*stderr OAR*{}*.stdout {}/{}/LOG/".format(log_dir, token, token, log_dir)
     logging.info("oar prefix: %s", oarsub_prefix)
     try:
-        command = oarsub_prefix + " '" + command  + "'"
+        command = oarsub_prefix + " '" + command  + "'; " + oarsub_suffix
         logging.critical("launching command: %s", command)
         ret_tuple = ssh_client.exec_command(command)
-        return ret_tuple[1].read()
+        ret_string = ret_tuple[1].read()
+        m = re.search("OAR_JOB_ID=(\d+)", ret_string)
+        if m:
+            return m.groups()[0]
+        else:
+            return -1
     except Exception as excpt:
         logging.critical("fail to execute command '%s':  %s'", command, excpt)
         raise ValueError("fail to execute command '%s':  %s'", command, excpt)
 
 def run_on_frontal(ssh_client, command):
     """ run on the frontal the given command ie without oarsub"""
+    logging.critical("run on frontal: %s", command)
     try:
-        logging.critical("launching command: %s", command)
         ret_tuple = ssh_client.exec_command(command)
         return ret_tuple[1].read()
     except Exception as excpt:
         logging.critical("fail to execute command '%s':  %s'", command, excpt)
         raise ValueError("fail to execute command '%s':  %s'", command, excpt)
 
-def get_job_status(ssh_client, token, log_dir):
+def get_job_status(ssh_client, token, oar_id):
     """ get the job id from the token
         the id can be either a pid or a oar id
 
-    :param token: the token that was assigned when launging the job
+    :param oar_id: the oar id of the process
+    :type token: string
+    :param token: the token that was assigned when launching the job
     :type token: string (uuid)
-    :return: the id
-    :type: integer
+    :return: a json structure presenting the status (and the cmd error code)
+    :type: str
     """
-    command = "ws_cluster/bin/wsc_get_status.py --logdir {} --token {}".format(log_dir, token)
-    logging.critical("asking for status: command=%s", command)
+    command = "python ws_cluster/bin/wsc_get_status.py --oarid {}".format(oar_id)
+    logging.critical("info for status: command=%s", command)
     ret = run_on_frontal(ssh_client, command)
-    return ret
+    logging.critical("status: %s", ret)
+    #ret = json.dumps({'oarStatus' : '' , 'returnCode' : '' , 'errorMessage' : ''})
+    ret_json = json.loads(ret) 
+    #print "#################"+ repr(ret_json)
+    #Running, toLaunch, Terminated doivent devenir Accepted, Faild, Terminated
+    if ret_json['errorMessage'] <> "" :
+        percentDone = 0
+        status = "Failed"        
+    elif ret_json['oarStatus'] == "toLaunch" :
+        percentDone = 0
+        status = "Accepted"
+    elif ret_json['oarStatus'] == "Terminated" :
+        percentDone = 100
+        status = "Terminated"
+    else :
+        percentDone = 50
+        status = "Accepted"            
+    
+    jobStatus = {
+        "StatusInfo": {
+        "JobID": oar_id,
+        "processToken" : token,
+        "Status": "" +status+ "",
+        "Progress": percentDone
+        }
+    }
+    return jobStatus
 
 def test_connect_luke(cluster):
     """basic testing of connect with cluster config
